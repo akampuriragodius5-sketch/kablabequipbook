@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>KAB Lab Equip Book — Kabale University</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
+  body { background: linear-gradient(135deg, #0b3d2e 0%, #146b4a 100%); min-height: 100vh; color: #222; }
+
+  /* ---------- Header ---------- */
+  header {
+    background: #0a2e22;
+    color: #fff;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  header h1 { font-size: 22px; letter-spacing: 1px; }
+  header h1 span { color: #f1c40f; }
+  .user-info { font-size: 14px; text-align: right; }
+  .user-info small { display: block; opacity: 0.7; }
+
+  /* ---------- Login Screen ---------- */
+  .login-wrap {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  .login-card {
+    background: #fff;
+    padding: 35px 40px;
+    border-radius: 14px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+  }
+  .login-card h2 {
+    text-align: center;
+    color: #0b3d2e;
+    margin-bottom: 6px;
+  }
+  .login-card p.sub {
+    text-align: center;
+    color: #666;
+    margin-bottom: 20px;
+    font-size: 13px;
+  }
+  .role-tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid #0b3d2e;
+  }
+  .role-tabs button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    background: #fff;
+    cursor: pointer;
+    font-weight: 600;
+    color: #0b3d2e;
+    transition: 0.2s;
+  }
+  .role-tabs button.active {
+    background: #0b3d2e;
+    color: #fff;
+  }
+  .form-group { margin-bottom: 15px; }
+  .form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    color: #333;
+  }
+  .form-group input, .form-group select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+  }
+  .form-group input:focus, .form-group select:focus {
+    outline: none;
+    border-color: #0b3d2e;
+    box-shadow: 0 0 0 2px rgba(11,61,46,0.2);
+  }
+  .btn {
+    width: 100%;
+    padding: 12px;
+    background: #0b3d2e;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .btn:hover { background: #146b4a; }
+  .btn-sm { width: auto; padding: 7px 14px; font-size: 13px; }
+  .btn-danger { background: #c0392b; }
+  .btn-danger:hover { background: #e74c3c; }
+
+  /* ---------- Dashboard ---------- */
+  .container {
+    max-width: 1100px;
+    margin: 25px auto;
+    padding: 0 20px;
+  }
+  .tabs {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .tabs button {
+    padding: 10px 20px;
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s;
+  }
+  .tabs button.active {
+    background: #f1c40f;
+    color: #0b3d2e;
+  }
+  .panel {
+    background: #fff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    display: none;
+  }
+  .panel.active { display: block; }
+  .panel h3 {
+    color: #0b3d2e;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #f1c40f;
+    padding-bottom: 8px;
+  }
+
+  /* Stats */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    margin-bottom: 25px;
+  }
+  .stat-card {
+    background: linear-gradient(135deg, #0b3d2e, #146b4a);
+    color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+  }
+  .stat-card .num { font-size: 32px; font-weight: bold; color: #f1c40f; }
+  .stat-card .lbl { font-size: 13px; margin-top: 5px; opacity: 0.9; }
+
+  /* Equipment table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  th, td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+  }
+  th { background: #0b3d2e; color: #fff; }
+  tr:hover { background: #f7f7f7; }
+  .badge {
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .badge-available { background: #d4edda; color: #155724; }
+  .badge-low { background: #fff3cd; color: #856404; }
+  .badge-out { background: #f8d7da; color: #721c24; }
+
+  /* Booking form */
+  .booking-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+  }
+  .booking-form .full { grid-column: 1 / -1; }
+  @media (max-width: 600px) {
+    .booking-form { grid-template-columns: 1fr; }
+  }
+
+  .alert {
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    font-size: 14px;
+  }
+  .alert-success { background: #d4edda; color: #155724; border-left: 4px solid #28a745; }
+  .alert-error { background: #f8d7da; color: #721c24; border-left: 4px solid #dc3545; }
+
+  .serial {
+    font-family: 'Courier New', monospace;
+    background: #f1f1f1;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+
+  footer {
+    text-align: center;
+    color: rgba(255,255,255,0.7);
+    padding: 20px;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+
+<!-- =================== LOGIN SCREEN =================== -->
+<div id="loginScreen" class="login-wrap">
+  <div class="login-card">
+    <h2>KAB Lab Equip Book</h2>
+    <p class="sub">Kabale University — Equipment Booking System</p>
+
+    <div class="role-tabs">
+      <button id="tabStudent" class="active" onclick="switchRole('student')">Student</button>
+      <button id="tabLecturer" onclick="switchRole('lecturer')">Lecturer</button>
+    </div>
+
+    <div class="form-group">
+      <label>Full Name</label>
+      <input type="text" id="loginName" placeholder="Enter your full name" />
+    </div>
+
+    <div class="form-group" id="idGroup">
+      <label id="idLabel">Reg Number</label>
+      <input type="text" id="loginId" placeholder="Enter your Reg number" />
+    </div>
+
+    <button class="btn" onclick="doLogin()">Login</button>
+    <p style="text-align:center; margin-top:15px; font-size:12px; color:#888;">
+      Demo: any name + any number works.
+    </p>
+  </div>
+</div>
+
+<!-- =================== MAIN APP =================== -->
+<div id="mainApp" style="display:none;">
+  <header>
+    <h1>KAB <span>Lab Equip Book</span></h1>
+    <div class="user-info">
+      <strong id="userName">—</strong>
+      <small id="userRole">—</small>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="showPanel('home', this)">🏠 Home</button>
+      <button class="tab-btn" onclick="showPanel('book', this)">📝 Book Equipment</button>
+      <button class="tab-btn" onclick="showPanel('mybookings', this)">📋 My Bookings</button>
+      <button class="tab-btn" onclick="showPanel('catalog', this)">🗂 Equipment Catalog</button>
+      <button class="tab-btn" onclick="logout()" style="margin-left:auto; background:#c0392b;">🚪 Logout</button>
+    </div>
+
+    <!-- HOME PANEL -->
+    <div id="home" class="panel active">
+      <h3>Welcome, <span id="welcomeName">User</span> 👋</h3>
+      <div class="stats">
+        <div class="stat-card">
+          <div class="num" id="statTotal">0</div>
+          <div class="lbl">Items Booked (You)</div>
+        </div>
+        <div class="stat-card">
+          <div class="num" id="statActive">0</div>
+          <div class="lbl">Active Bookings</div>
+        </div>
+        <div class="stat-card">
+          <div class="num" id="statReturned">0</div>
+          <div class="lbl">Returned</div>
+        </div>
+        <div class="stat-card">
+          <div class="num" id="statCatalog">0</div>
+          <div class="lbl">Available in Catalog</div>
+        </div>
+      </div>
+
+      <h3>Recent Bookings</h3>
+      <table id="recentTable">
+        <thead>
+          <tr>
+            <th>Serial No.</th>
+            <th>Equipment</th>
+            <th>Qty</th>
+            <th>Date Booked</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <!-- BOOK PANEL -->
+    <div id="book" class="panel">
+      <h3>Book Equipment</h3>
+      <div id="bookAlert"></div>
+      <div class="booking-form">
+        <div class="form-group">
+          <label>Select Equipment</label>
+          <select id="equipSelect"></select>
+        </div>
+        <div class="form-group">
+          <label>Quantity</label>
+          <input type="number" id="equipQty" min="1" value="1" />
+        </div>
+        <div class="form-group">
+          <label>Purpose / Project</label>
+          <input type="text" id="equipPurpose" placeholder="e.g. Final Year Project" />
+        </div>
+        <div class="form-group">
+          <label>Return Date</label>
+          <input type="date" id="equipReturn" />
+        </div>
+        <div class="form-group full">
+          <button class="btn" onclick="makeBooking()">Confirm Booking</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MY BOOKINGS -->
+    <div id="mybookings" class="panel">
+      <h3>My Bookings</h3>
+      <table id="myBookingsTable">
+        <thead>
+          <tr>
+            <th>Serial No.</th>
+            <th>Equipment</th>
+            <th>Qty</th>
+            <th>Purpose</th>
+            <th>Booked On</th>
+            <th>Return By</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <!-- CATALOG -->
+    <div id="catalog" class="panel">
+      <h3>Equipment Catalog</h3>
+      <table id="catalogTable">
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Equipment</th>
+            <th>Total Stock</th>
+            <th>Available</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer>
+    © 2026 Kabale University — KAB Lab Equip Book Prototype
+  </footer>
+</div>
+
+<script>
+/* =========================================================
+   DATA LAYER
+========================================================= */
+const CATALOG = [
+  { code: 'PRJ', name: 'Projector',             stock: 8  },
+  { code: 'OLD', name: 'Old System (Desktop)',  stock: 15 },
+  { code: 'KEY', name: 'Keyboard',              stock: 25 },
+  { code: 'HDD', name: 'Hard Disc',             stock: 12 },
+  { code: 'MON', name: 'Monitor',               stock: 10 },
+  { code: 'MOU', name: 'Mouse',                 stock: 20 },
+  { code: 'PRT', name: 'Printer',               stock: 4  },
+  { code: 'CAB', name: 'HDMI / VGA Cables',     stock: 30 },
+  { code: 'USB', name: 'USB Flash Drive',       stock: 18 },
+  { code: 'OTH', name: 'Others',                stock: 10 }
+];
+
+let currentUser = null;   // { name, id, role }
+let bookings    = JSON.parse(localStorage.getItem('kab_bookings') || '[]');
+
+function saveBookings() {
+  localStorage.setItem('kab_bookings', JSON.stringify(bookings));
+}
+
+/* =========================================================
+   LOGIN
+========================================================= */
+let currentRole = 'student';
+
+function switchRole(role) {
+  currentRole = role;
+  document.getElementById('tabStudent').classList.toggle('active', role === 'student');
+  document.getElementById('tabLecturer').classList.toggle('active', role === 'lecturer');
+  const idLabel = document.getElementById('idLabel');
+  const loginId = document.getElementById('loginId');
+  if (role === 'student') {
+    idLabel.textContent = 'Loge Number';
+    loginId.placeholder = 'Enter your loge number';
+  } else {
+    idLabel.textContent = 'Staff Identification Number';
+    loginId.placeholder = 'Enter your staff ID';
+  }
+}
+
+function doLogin() {
+  const name = document.getElementById('loginName').value.trim();
+  const id   = document.getElementById('loginId').value.trim();
+  if (!name || !id) {
+    alert('Please fill in both fields.');
+    return;
+  }
+  currentUser = { name, id, role: currentRole };
+  localStorage.setItem('kab_user', JSON.stringify(currentUser));
+  enterApp();
+}
+
+function logout() {
+  localStorage.removeItem('kab_user');
+  currentUser = null;
+  document.getElementById('mainApp').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('loginName').value = '';
+  document.getElementById('loginId').value = '';
+}
+
+/* =========================================================
+   APP ENTRY
+========================================================= */
+function enterApp() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('mainApp').style.display = 'block';
+  document.getElementById('userName').textContent = currentUser.name;
+  document.getElementById('userRole').textContent =
+    (currentUser.role === 'student' ? 'Student • Loge: ' : 'Lecturer • Staff ID: ') + currentUser.id;
+  document.getElementById('welcomeName').textContent = currentUser.name;
+
+  populateEquipSelect();
+  renderAll();
+}
+
+/* =========================================================
+   TABS
+========================================================= */
+function showPanel(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderAll();
+}
+
+/* =========================================================
+   SERIAL NUMBER GENERATOR  (11 digits like 34678934567)
+========================================================= */
+function generateSerial() {
+  let s = '';
+  for (let i = 0; i < 11; i++) s += Math.floor(Math.random() * 10);
+  // Avoid collisions
+  while (bookings.some(b => b.serial === s)) {
+    s = '';
+    for (let i = 0; i < 11; i++) s += Math.floor(Math.random() * 10);
+  }
+  return s;
+}
+
+/* =========================================================
+   BOOKING
+========================================================= */
+function populateEquipSelect() {
+  const sel = document.getElementById('equipSelect');
+  sel.innerHTML = '';
+  CATALOG.forEach(e => {
+    const avail = getAvailable(e.code);
+    const opt = document.createElement('option');
+    opt.value = e.code;
+    opt.textContent = `${e.name}  (Available: ${avail})`;
+    if (avail <= 0) opt.disabled = true;
+    sel.appendChild(opt);
+  });
+}
+
+function getAvailable(code) {
+  const item = CATALOG.find(c => c.code === code);
+  const booked = bookings
+    .filter(b => b.equipCode === code && b.status === 'Active')
+    .reduce((sum, b) => sum + b.qty, 0);
+  return item.stock - booked;
+}
+
+function makeBooking() {
+  const code    = document.getElementById('equipSelect').value;
+  const qty     = parseInt(document.getElementById('equipQty').value);
+  const purpose = document.getElementById('equipPurpose').value.trim();
+  const retDate = document.getElementById('equipReturn').value;
+  const alertBox = document.getElementById('bookAlert');
+
+  if (!qty || qty < 1) return showAlert('Please enter a valid quantity.', 'error');
+  if (!purpose)        return showAlert('Please enter the purpose.', 'error');
+  if (!retDate)        return showAlert('Please choose a return date.', 'error');
+
+  const avail = getAvailable(code);
+  if (qty > avail) return showAlert(`Only ${avail} available.`, 'error');
+
+  const equip = CATALOG.find(c => c.code === code);
+  const booking = {
+    serial: generateSerial(),
+    equipCode: code,
+    equipName: equip.name,
+    qty,
+    purpose,
+    returnDate: retDate,
+    bookedOn: new Date().toISOString(),
+    status: 'Active',
+    user: { ...currentUser }
+  };
+  bookings.push(booking);
+  saveBookings();
+
+  showAlert(`✅ Booking confirmed! Serial No: ${booking.serial}`, 'success');
+  document.getElementById('equipQty').value = 1;
+  document.getElementById('equipPurpose').value = '';
+  populateEquipSelect();
+  renderAll();
+}
+
+function returnItem(serial) {
+  const b = bookings.find(x => x.serial === serial);
+  if (b) { b.status = 'Returned'; saveBookings(); renderAll(); }
+}
+
+function cancelItem(serial) {
+  if (!confirm('Cancel this booking?')) return;
+  bookings = bookings.filter(x => x.serial !== serial);
+  saveBookings();
+  renderAll();
+}
+
+function showAlert(msg, type) {
+  const box = document.getElementById('bookAlert');
+  box.innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+  setTimeout(() => box.innerHTML = '', 4500);
+}
+
+/* =========================================================
+   RENDER
+========================================================= */
+function renderAll() {
+  if (!currentUser) return;
+
+  const myBookings = bookings.filter(b =>
+    b.user.name === currentUser.name && b.user.id === currentUser.id
+  );
+  const active   = myBookings.filter(b => b.status === 'Active');
+  const returned = myBookings.filter(b => b.status === 'Returned');
+
+  // Stats
+  document.getElementById('statTotal').textContent    = myBookings.length;
+  document.getElementById('statActive').textContent   = active.length;
+  document.getElementById('statReturned').textContent = returned.length;
+  document.getElementById('statCatalog').textContent  =
+    CATALOG.reduce((s, e) => s + getAvailable(e.code), 0);
+
+  // Recent bookings (home)
+  const recent = [...myBookings].sort((a,b) =>
+    new Date(b.bookedOn) - new Date(a.bookedOn)).slice(0, 5);
+  const rt = document.querySelector('#recentTable tbody');
+  rt.innerHTML = recent.length ? '' :
+    '<tr><td colspan="5" style="text-align:center; color:#888;">No bookings yet.</td></tr>';
+  recent.forEach(b => {
+    rt.innerHTML += `
+      <tr>
+        <td><span class="serial">${b.serial}</span></td>
+        <td>${b.equipName}</td>
+        <td>${b.qty}</td>
+        <td>${new Date(b.bookedOn).toLocaleDateString()}</td>
+        <td><span class="badge badge-${b.status === 'Active' ? 'available' : 'low'}">${b.status}</span></td>
+      </tr>`;
+  });
+
+  // My bookings
+  const mb = document.querySelector('#myBookingsTable tbody');
+  mb.innerHTML = myBookings.length ? '' :
+    '<tr><td colspan="8" style="text-align:center; color:#888;">No bookings yet.</td></tr>';
+  myBookings.forEach(b => {
+    const actions = b.status === 'Active'
+      ? `<button class="btn btn-sm" onclick="returnItem('${b.serial}')">Return</button>
+         <button class="btn btn-sm btn-danger" onclick="cancelItem('${b.serial}')">Cancel</button>`
+      : '—';
+    mb.innerHTML += `
+      <tr>
+        <td><span class="serial">${b.serial}</span></td>
+        <td>${b.equipName}</td>
+        <td>${b.qty}</td>
+        <td>${b.purpose}</td>
+        <td>${new Date(b.bookedOn).toLocaleDateString()}</td>
+        <td>${b.returnDate}</td>
+        <td><span class="badge badge-${b.status === 'Active' ? 'available' : 'low'}">${b.status}</span></td>
+        <td>${actions}</td>
+      </tr>`;
+  });
+
+  // Catalog
+  const ct = document.querySelector('#catalogTable tbody');
+  ct.innerHTML = '';
+  CATALOG.forEach(e => {
+    const avail = getAvailable(e.code);
+    let status = 'Available', cls = 'available';
+    if (avail === 0) { status = 'Out of Stock'; cls = 'out'; }
+    else if (avail <= 2) { status = 'Low Stock'; cls = 'low'; }
+    ct.innerHTML += `
+      <tr>
+        <td><strong>${e.code}</strong></td>
+        <td>${e.name}</td>
+        <td>${e.stock}</td>
+        <td>${avail}</td>
+        <td><span class="badge badge-${cls}">${status}</span></td>
+      </tr>`;
+  });
+}
+
+/* =========================================================
+   AUTO-LOGIN if session exists
+========================================================= */
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('kab_user');
+  if (saved) {
+    currentUser = JSON.parse(saved);
+    enterApp();
+  }
+  // Default return date = tomorrow
+  const d = new Date(); d.setDate(d.getDate() + 1);
+  document.getElementById('equipReturn').value = d.toISOString().split('T')[0];
+});
+</script>
+</body>
+</html>
